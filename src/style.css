@@ -1,0 +1,115 @@
+:root {
+  --bg: #111c2f;
+  --bg-soft: #17304d;
+  --panel: rgba(11, 19, 32, 0.78);
+  --text: #f7efe1;
+  --accent: #d9a441;
+  --danger: #f2646a;
+  --safe: #61d095;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: "Space Mono", monospace;
+  background:
+    radial-gradient(1200px 700px at 20% 0%, #27435f 0%, transparent 60%),
+    radial-gradient(900px 900px at 90% 100%, #3f2f51 0%, transparent 70%),
+    linear-gradient(140deg, var(--bg) 0%, #0b1523 100%);
+  display: grid;
+  place-items: center;
+}
+
+.game-shell {
+  width: min(100vw, 1100px);
+  padding: 1rem;
+  position: relative;
+}
+
+.hud {
+  margin-bottom: 0.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: var(--panel);
+  border-radius: 10px;
+  backdrop-filter: blur(6px);
+  padding: 0.75rem 1rem;
+}
+
+.hud h1 {
+  margin: 0;
+  font-family: "Cinzel", serif;
+  letter-spacing: 0.08em;
+}
+
+.stats {
+  display: flex;
+  gap: 1.5rem;
+  margin-top: 0.4rem;
+}
+
+.stats p {
+  margin: 0;
+}
+
+.tip {
+  margin: 0.65rem 0 0;
+  font-size: 0.86rem;
+  opacity: 0.92;
+}
+
+canvas {
+  width: 100%;
+  height: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 20px 80px rgba(0, 0, 0, 0.4);
+  background: linear-gradient(180deg, #122743 0%, #0c192f 100%);
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(4, 7, 14, 0.55);
+  border-radius: 12px;
+}
+
+.overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.card {
+  max-width: 540px;
+  padding: 1.1rem 1.3rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  background: linear-gradient(140deg, rgba(27, 33, 53, 0.95), rgba(26, 50, 74, 0.95));
+}
+
+.card h2 {
+  font-family: "Cinzel", serif;
+  margin: 0 0 0.4rem;
+}
+
+.card p {
+  margin: 0;
+  line-height: 1.5;
+}
+
+@media (max-width: 700px) {
+  .stats {
+    gap: 0.8rem;
+    flex-wrap: wrap;
+  }
+
+  .tip {
+    font-size: 0.8rem;
+  }
+}
