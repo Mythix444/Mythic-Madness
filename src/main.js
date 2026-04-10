@@ -27,7 +27,11 @@ const state = {
     health: 100,
     facing: 0,
     dashCooldown: 0,
-    blastCooldown: 0
+    blastCooldown: 0,
+    dashTimer: 0,
+    dashDirX: 0,
+    dashDirY: 0,
+    invulnTimer: 0
   },
   enemies: [],
   runes: [],
@@ -51,6 +55,10 @@ function resetGame() {
   state.player.health = 100;
   state.player.dashCooldown = 0;
   state.player.blastCooldown = 0;
+  state.player.dashTimer = 0;
+  state.player.dashDirX = 0;
+  state.player.dashDirY = 0;
+  state.player.invulnTimer = 0;
 
   state.enemies.length = 0;
   state.runes.length = 0;
@@ -152,21 +160,40 @@ function updatePlayer(dt) {
     p.facing = Math.atan2(dy, dx);
   }
 
-  let moveSpeed = p.speed;
   if ((keys.has("shift") || keys.has("shiftleft") || keys.has("shiftright")) && p.dashCooldown <= 0) {
-    moveSpeed = p.speed * 2.8;
+    const dashDx = len > 0 ? dx : Math.cos(p.facing);
+    const dashDy = len > 0 ? dy : Math.sin(p.facing);
+
+    p.dashTimer = 0.18;
+    p.dashDirX = dashDx;
+    p.dashDirY = dashDy;
     p.dashCooldown = 1.8;
-    state.flash = 0.2;
+    p.invulnTimer = 0.22;
+    state.flash = 0.28;
   }
 
-  p.x += dx * moveSpeed * dt;
-  p.y += dy * moveSpeed * dt;
+  if (p.dashTimer > 0) {
+    if (len > 0) {
+      p.dashDirX = dx;
+      p.dashDirY = dy;
+      p.facing = Math.atan2(dy, dx);
+    }
+
+    const dashSpeed = 1100;
+    p.x += p.dashDirX * dashSpeed * dt;
+    p.y += p.dashDirY * dashSpeed * dt;
+  } else {
+    p.x += dx * p.speed * dt;
+    p.y += dy * p.speed * dt;
+  }
 
   p.x = Math.max(p.radius, Math.min(canvas.width - p.radius, p.x));
   p.y = Math.max(p.radius, Math.min(canvas.height - p.radius, p.y));
 
   p.dashCooldown -= dt;
   p.blastCooldown -= dt;
+  p.dashTimer -= dt;
+  p.invulnTimer -= dt;
 
   if (keys.has(" ") && p.blastCooldown <= 0) {
     p.blastCooldown = 0.28;
@@ -278,7 +305,9 @@ function updateEnemies(dt) {
     e.y += (ny + Math.sin(e.wobble) * 0.1) * e.speed * dt;
 
     if (d < e.r + p.radius) {
-      p.health = 0;
+      if (p.invulnTimer <= 0) {
+        p.health = 0;
+      }
       state.flash = Math.min(0.4, state.flash + dt * 3);
     }
   }
@@ -315,7 +344,7 @@ function updateBeams(dt) {
       const dy = state.player.y - beam.cy;
       const distance = Math.abs(dx * nx + dy * ny);
 
-      if (distance < beam.width * 0.5 + state.player.radius) {
+      if (distance < beam.width * 0.5 + state.player.radius && state.player.invulnTimer <= 0) {
         state.player.health = 0;
       }
 
